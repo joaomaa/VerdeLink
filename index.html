@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <title>VerdeLink - Cidades Inteligentes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background-color: #F5F5F5;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #006400 0%, #0047AB 100%);
+            color: #FFFFFF;
+            padding: 20px 40px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        nav {
+            background-color: transparent;
+            padding: 10px;
+            text-align: center;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        nav ul li a {
+            color: #FFFFFF;
+            text-decoration: none;
+            font-size: 1.2em;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav ul li a:hover {
+            color: #FFA500;
+        }
+
+        section {
+            padding: 100px 20px;
+            max-width: 1200px;
+            margin: auto;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 1s forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #home {
+            background: url('https://via.placeholder.com/1200x400/006400/FFFFFF?text=VerdeLink+Banner') center/cover;
+            text-align: center;
+            color: #006400;
+            padding: 150px 20px;
+        }
+
+        #home h2 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        #home p {
+            font-size: 1.3em;
+            max-width: 700px;
+            margin: auto;
+        }
+
+        #project {
+            background-color: #FFFFFF;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            padding: 40px;
+        }
+
+        #project h2, #gallery h2, #about h2, #contact h2 {
+            font-size: 2.5em;
+            color: #0047AB;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .carousel {
+            display: flex;
+            overflow-x: auto;
+            gap: 20px;
+            padding: 20px 0;
+            scroll-snap-type: x mandatory;
+        }
+
+        .carousel-item {
+            flex: 0 0 300px;
+            background-color: #D3D3D3;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            scroll-snap-align: start;
+        }
+
+        .carousel-item h3 {
+            color: #006400;
+            margin-bottom: 10px;
+        }
+
+        #gallery {
+            background-color: #F5F5F5;
+            padding: 60px 20px;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .gallery-item p {
+            background: rgba(0,100,0,0.8);
+            color: #FFFFFF;
+            padding: 10px;
+            text-align: center;
+            font-size: 1em;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+
+        #about {
+            background-color: #FFFFFF;
+            text-align: center;
+            padding: 60px 20px;
+            border-radius: 10px;
+        }
+
+        #contact {
+            background: linear-gradient(135deg, #0047AB 0%, #006400 100%);
+            color: #FFFFFF;
+            text-align: center;
+            padding: 60px 20px;
+            border-radius: 10px;
+        }
+
+        #contact input, #contact textarea {
+            width: 100%;
+            max-width: 500px;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 5px;
+            background-color: #FFFFFF;
+            color: #333;
+        }
+
+        #contact button {
+            background-color: #FFA500;
+            color: #FFFFFF;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: background-color 0.3s;
+        }
+
+        #contact button:hover {
+            background-color: #006400;
+        }
+
+        .hamburger {
+            display: none;
+            font-size: 2em;
+            cursor: pointer;
+            color: #FFFFFF;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        @media (max-width: 768px) {
+            nav ul {
+                display: none;
+                flex-direction: column;
+                background: linear-gradient(135deg, #006400 0%, #0047AB 100%);
+                position: absolute;
+                top: 80px;
+                width: 100%;
+                padding: 20px;
+            }
+
+            nav ul.active {
+                display: flex;
+            }
+
+            .hamburger {
+                display: block;
+            }
+
+            #home h2 {
+                font-size: 2em;
+            }
+
+            .carousel {
+                flex-direction: column;
+            }
+
+            .carousel-item {
+                flex: 0 0 auto;
+                width: 100%;
+            }
+
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>VerdeLink</h1>
+        <div class="hamburger">☰</div>
+        <nav>
+            <ul>
+                <li><a href="#home">Início</a></li>
+                <li><a href="#project">Projeto</a></li>
+                <li><a href="#gallery">Galeria</a></li>
+                <li><a href="#about">Sobre</a></li>
+                <li><a href="#contact">Contato</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section id="home">
+        <h2>Cidades Inteligentes para um Futuro Verde</h2>
+        <p>VerdeLink transforma cidades com IoT, IA e robótica, combatendo o calor extremo e promovendo resiliência urbana. Nosso projeto piloto em Teresina é o primeiro passo para um Nordeste sustentável.</p>
+    </section>
+
+    <section id="project">
+        <h2>Projeto: Verde Resiliente Teresina</h2>
+        <p>Nosso plano combate o calor extremo na Grande Teresina com três passos inovadores:</p>
+        <div class="carousel">
+            <div class="carousel-item">
+                <h3>1. Coleta de Dados</h3>
+                <p>Sensores IoT e estações meteorológicas mapeiam calor em tempo real, criando um gêmeo digital para identificar áreas vulneráveis.</p>
+            </div>
+            <div class="carousel-item">
+                <h3>2. Plataforma Colaborativa</h3>
+                <p>Integra dados urbanos, ambientais e socioeconômicos para planejar infraestrutura verde com embasamento científico.</p>
+            </div>
+            <div class="carousel-item">
+                <h3>3. Infraestrutura Verde</h3>
+                <p>IA seleciona árvores otimizadas; robôs autônomos plantam e adubam, reduzindo temperaturas em até 5°C.</p>
+            </div>
+        </div>
+        <p>Nosso foco é beneficiar a cidade, com replicabilidade para outras cidades nordestinas.</p>
+    </section>
+
+    <section id="gallery">
+        <h2>Galeria de Soluções</h2>
+        <div class="gallery-grid">
+            <div class="gallery-item">
+                <img src="estacao-metereologica.jpg" alt="Sensores IoT">
+                <p>Sensores IoT mapeiam calor em tempo real para identificar hotspots em Teresina.</p>
+            </div>
+            <div class="gallery-item">
+                <img src="gemeos.png" alt="Gêmeo Digital">
+                <p>Gêmeo digital simula cenários para planejamento de infraestrutura verde.</p>
+            </div>
+            <div class="gallery-item">
+                <img src="ia.jpg" alt="Inteligência Artificial">
+                <p>Utilização de IA para identificar as melhores soluções criativas de vegetação.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="about">
+        <h2>Sobre a VerdeLink</h2>
+        <p>Sediada em Teresina, a VerdeLink une expertise em IoT e robótica com parcerias, como a Fundação Wall Ferraz, para criar cidades inteligentes. Este projeto é nosso case piloto, rumo a uma rede nacional de soluções sustentáveis.</p>
+    </section>
+
+    <section id="contact">
+        <h2>Entre em Contato</h2>
+        <p>Quer colaborar ou saber mais? Fale conosco!</p>
+        <input type="text" id="name" placeholder="Nome">
+        <input type="email" id="email" placeholder="E-mail">
+        <textarea id="message" placeholder="Mensagem" rows="5"></textarea>
+        <button onclick="validateForm()">Enviar</button>
+        <p>E-mail do Representante: joaoantoniomaa@gmail.com</p>
+        <p>Telefone da VerLink: (86) 9 9598-6271</p>
+    </section>
+
+    <script>
+        // Smooth Scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Hamburger Menu
+        document.querySelector('.hamburger').addEventListener('click', () => {
+            document.querySelector('nav ul').classList.toggle('active');
+        });
+
+        // Form Validation (No Submission)
+        function validateForm() {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
+
+            if (!name || !email || !message) {
+                alert('Por favor, preencha todos os campos.');
+                return;
+            }
+
+            if (!email.includes('@')) {
+                alert('Por favor, insira um e-mail válido.');
+                return;
+            }
+
+            alert('Mensagem validada! Entraremos em contato em breve.');
+            document.getElementById('name').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('message').value = '';
+        }
+    </script>
+</body>
+</html>
