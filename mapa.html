@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa de Calor - VerdeLink</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body { margin: 0; padding: 0; }
+        #map { height: 100vh; width: 100%; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Inicializa o mapa centrado em Teresina
+        var map = L.map('map').setView([-5.0892, -42.8029], 12); // Coordenadas de Teresina
+
+        // Adiciona tile layer (mapa base)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        // Dados mock para 5 locais (substitua por ThingSpeak depois)
+        var sensors = [
+            { lat: -5.0892, lng: -42.8029, temp: 32 }, // Casa
+            { lat: -5.0900, lng: -42.8000, temp: 34 }, // Sócio
+            { lat: -5.0850, lng: -42.8050, temp: 30 }, // Trabalho
+            { lat: -5.0950, lng: -42.8100, temp: 33 }, // Parque
+            { lat: -5.1000, lng: -42.8150, temp: 31 }  // Rio Parnaíba
+        ];
+
+        // Adiciona marcadores
+        sensors.forEach(sensor => {
+            var color = sensor.temp > 32 ? 'red' : 'green';
+            L.circleMarker([sensor.lat, sensor.lng], {
+                radius: 10,
+                color: color,
+                fillColor: color,
+                fillOpacity: 0.7
+            }).addTo(map).bindPopup(`Temperatura: ${sensor.temp}°C`);
+        });
+    </script>
+</body>
+</html>
