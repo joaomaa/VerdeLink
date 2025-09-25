@@ -3,19 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa de Calor - VerdeLink</title>
+    <title>Mapa de Calor e Umidade - VerdeLink</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         body { margin: 0; padding: 0; }
         #map { height: 100vh; width: 100%; }
+        #info-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            padding: 10px 20px;
+            background-color: #006400; /* Verde escuro */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #info-button:hover {
+            background-color: #004d00; /* Verde mais escuro ao passar o mouse */
+        }
     </style>
 </head>
 <body>
     <div id="map"></div>
+    <button id="info-button">Saiba Mais</button>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         // Inicializa o mapa centrado em Teresina
-        var map = L.map('map').setView([-5.0892, -42.8029], 12); // Coordenadas de Teresina
+        var map = L.map('map').setView([-5.0892, -42.8029], 12);
 
         // Adiciona tile layer (mapa base)
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -23,24 +40,51 @@
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }).addTo(map);
 
-        // Dados mock para 5 locais (substitua por ThingSpeak depois)
+        // Array de sensores: Reais (ThingSpeak) + Mock em localizações específicas
         var sensors = [
-            { lat: -5.0892, lng: -42.8029, temp: 32 }, // Casa
-            { lat: -5.0900, lng: -42.8000, temp: 34 }, // Sócio
-            { lat: -5.0850, lng: -42.8050, temp: 30 }, // Trabalho
-            { lat: -5.0950, lng: -42.8100, temp: 33 }, // Parque
-            { lat: -5.1000, lng: -42.8150, temp: 31 }  // Rio Parnaíba
+            { lat: -5.091, lng: -42.813, label: 'MIS Centro', channel: '3082876', apiKey: 'IPPR3ET02C8VVG0G' },  // ESP Real 1 (MIS)
+            { lat: -5.0892, lng: -42.8029, label: 'Casa', channel: '3089264', apiKey: 'XC8JCFMJQAZQJP2F' },    // ESP Real 2 (Casa)
+            { lat: -5.108, lng: -42.806, label: 'Casa 2', temp: 35, hum: 72 },  // Mock 1 (comercial)
+            { lat: -5.070, lng: -42.790, label: 'Trabalho', temp: 29, hum: 68 },       // Mock 2 (residencial)
+            { lat: -5.113, lng: -42.774, label: 'Casa 3', temp: 35, hum: 70 }           // Mock 3 (residencial)
         ];
 
-        // Adiciona marcadores
-        sensors.forEach(sensor => {
-            var color = sensor.temp > 32 ? 'red' : 'green';
-            L.circleMarker([sensor.lat, sensor.lng], {
-                radius: 10,
-                color: color,
-                fillColor: color,
-                fillOpacity: 0.7
-            }).addTo(map).bindPopup(`Temperatura: ${sensor.temp}°C`);
+        // Função para atualizar dados reais do ThingSpeak
+        async function updateSensorData(sensor) {
+            if (sensor.channel) {
+                const url = `https://api.thingspeak.com/channels/${sensor.channel}/fields/1/last.json?api_key=${sensor.apiKey}`;
+                const response = await fetch(url);
+                const data = await response.json();
+                sensor.temp = parseFloat(data.field1) || sensor.temp;  // Temp (Field 1)
+                const humUrl = `https://api.thingspeak.com/channels/${sensor.channel}/fields/2/last.json?api_key=${sensor.apiKey}`;
+                const humResponse = await fetch(humUrl);
+                const humData = await humResponse.json();
+                sensor.hum = parseFloat(humData.field2) || sensor.hum;  // Umidade (Field 2)
+            }
+        }
+
+        // Atualiza e adiciona marcadores
+        async function loadSensors() {
+            for (let sensor of sensors) {
+                await updateSensorData(sensor);
+                const color = sensor.temp > 32 ? 'red' : 'green';
+                L.circleMarker([sensor.lat, sensor.lng], {
+                    radius: 10,
+                    color: color,
+                    fillColor: color,
+                    fillOpacity: 0.7
+                }).addTo(map).bindPopup(`${sensor.label}<br>Temperatura: ${sensor.temp}°C<br>Umidade: ${sensor.hum}%`);
+            }
+        }
+
+        loadSensors();
+
+        // Atualiza a cada 1 minuto
+        setInterval(loadSensors, 60000);
+
+        // Redireciona para o site ao clicar no botão
+        document.getElementById('info-button').addEventListener('click', function() {
+            window.location.href = 'https://joaomaa.github.io/VerdeLink'; // Substitua pelo URL do seu site
         });
     </script>
 </body>
